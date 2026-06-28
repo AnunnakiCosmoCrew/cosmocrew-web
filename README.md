@@ -1,8 +1,9 @@
 # CosmoCrew Web
 
-The public website for **CosmoCrew**, a small independent software studio. It is
-a fast, minimal, static site that showcases our live products and links to their
-App Store pages, support, and docs.
+The public website for **CosmoCrew**, an independent software company building
+calm, capable products for focus and learning. It is a fast, minimal, static
+site that showcases our live products and links to their App Store pages,
+support, and docs.
 
 - **Framework:** [Astro](https://astro.build) (static output, TypeScript)
 - **Styling:** hand-written modern CSS with design tokens (no UI framework)

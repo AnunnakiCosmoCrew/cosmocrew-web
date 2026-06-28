@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Public website for CosmoCrew — a small indie software studio.",
+  "description": "Public website for CosmoCrew — calm, capable apps for focus and learning.",
   "engines": {
     "node": ">=24"
   },
