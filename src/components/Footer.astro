@@ -1,5 +1,6 @@
 ---
 import { withBase } from '../lib/url';
+import { koFiUrl } from '../lib/site';
 
 const year = new Date().getFullYear();
 ---
@@ -9,6 +10,7 @@ const year = new Date().getFullYear();
     <div class="footer-brand">
       <span class="footer-name">CosmoCrew</span>
       <p>A small, independent software studio.</p>
+      <a class="footer-support" href={koFiUrl} rel="noopener noreferrer" target="_blank"><span class="heart" aria-hidden="true">&#9829;</span> Support the studio</a>
     </div>
 
     <nav class="footer-nav" aria-label="Footer">
@@ -56,6 +58,21 @@ const year = new Date().getFullYear();
     margin-top: var(--sp-1);
     font-size: var(--fs-300);
     color: var(--c-muted);
+  }
+
+  .footer-support {
+    display: inline-block;
+    margin-top: var(--sp-4);
+    font-size: var(--fs-300);
+    color: var(--c-ink-soft);
+  }
+
+  .footer-support:hover {
+    color: var(--c-accent);
+  }
+
+  .footer-support .heart {
+    color: var(--c-accent);
   }
 
   .footer-nav {
