@@ -1,0 +1,70 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary';
+  /** Set true for off-site links (adds rel + new-tab semantics). */
+  external?: boolean;
+  class?: string;
+}
+
+const { href, variant = 'primary', external = false, class: className = '' } =
+  Astro.props;
+
+const rel = external ? 'noopener noreferrer' : undefined;
+const target = external ? '_blank' : undefined;
+---
+
+<a
+  href={href}
+  class:list={['btn', `btn--${variant}`, className]}
+  rel={rel}
+  target={target}
+>
+  <slot />
+</a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: 0.7rem 1.25rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: var(--fs-400);
+    line-height: 1;
+    border: 1px solid transparent;
+    transition:
+      transform var(--dur) var(--ease),
+      background-color var(--dur) var(--ease),
+      border-color var(--dur) var(--ease),
+      color var(--dur) var(--ease);
+  }
+
+  .btn--primary {
+    background-color: var(--c-accent);
+    color: var(--c-accent-contrast);
+  }
+
+  .btn--primary:hover {
+    background-color: var(--c-accent-hover);
+    color: var(--c-accent-contrast);
+  }
+
+  .btn--secondary {
+    background-color: transparent;
+    color: var(--c-ink);
+    border-color: var(--c-border);
+  }
+
+  .btn--secondary:hover {
+    color: var(--c-ink);
+    border-color: var(--c-accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+  }
+</style>

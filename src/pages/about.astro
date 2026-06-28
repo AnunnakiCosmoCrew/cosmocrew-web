@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Prose from '../components/Prose.astro';
+---
+
+<BaseLayout
+  title="About — CosmoCrew"
+  description="CosmoCrew is a small, independent, founder-led software studio building a few calm, well-made apps for iOS."
+  path="about"
+>
+  <section class="container narrow">
+    <div class="section-head">
+      <p class="eyebrow">About</p>
+      <h1>A small studio</h1>
+    </div>
+
+    <Prose>
+      <p>
+        CosmoCrew is a small, independent software studio. It is founder-led and
+        deliberately modest — not a big company, and not trying to be one. The
+        goal is simple: build a few genuinely good apps and look after them well.
+      </p>
+      <p>
+        We like quiet software. Tools that do one thing clearly, run fast, and
+        respect your attention instead of competing for it. That shapes how we
+        work: we ship slowly, polish carefully, and would rather make a small
+        number of things well than a long list of things in a hurry.
+      </p>
+      <p>
+        Today two apps are live on iOS — <strong>SliceFocus</strong> for visual
+        day planning and focus, and <strong>LexiPower</strong> for vocabulary
+        practice. Each grew out of something we wanted to use ourselves, and each
+        keeps getting better in small, steady steps.
+      </p>
+      <p>
+        If you use one of our apps, thank you — it genuinely means a lot to a
+        studio this size. You can always reach us at
+        <a href="mailto:contact@cosmocrew.dev">contact@cosmocrew.dev</a>.
+      </p>
+    </Prose>
+  </section>
+</BaseLayout>
+
+<style>
+  .narrow {
+    max-width: var(--maxw-prose);
+  }
+</style>

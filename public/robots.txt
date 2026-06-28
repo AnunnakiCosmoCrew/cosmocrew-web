@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap (update this URL if you move to a custom domain, e.g. https://cosmocrew.dev/sitemap-index.xml)
+Sitemap: https://anunnakicosmocrew.github.io/cosmocrew-web/sitemap-index.xml

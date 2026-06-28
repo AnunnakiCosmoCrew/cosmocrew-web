@@ -1,0 +1,44 @@
+---
+import { absoluteUrl, withBase } from '../lib/url';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Internal path WITHOUT leading slash, e.g. 'products' or '' for home. */
+  path?: string;
+  /** Optional social image path in public/, relative (no leading slash). */
+  ogImage?: string;
+}
+
+const { title, description, path = '', ogImage = 'og.svg' } = Astro.props;
+const canonical = absoluteUrl(path);
+const image = absoluteUrl(ogImage);
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+<link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+<meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0e0f13" media="(prefers-color-scheme: dark)" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="CosmoCrew" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={image} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+
+<link rel="sitemap" href={withBase('sitemap-index.xml')} />

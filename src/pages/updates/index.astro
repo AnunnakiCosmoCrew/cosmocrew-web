@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import UpdateCard from '../../components/UpdateCard.astro';
+import { withBase } from '../../lib/url';
+
+const updates = (await getCollection('updates', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+---
+
+<BaseLayout
+  title="Updates — CosmoCrew"
+  description="Occasional notes from CosmoCrew — meaningful updates to our apps and the thinking behind them."
+  path="updates"
+>
+  <section class="container narrow">
+    <div class="section-head">
+      <p class="eyebrow">Updates</p>
+      <h1>Notes &amp; changelog</h1>
+      <p class="lead">
+        Occasional notes on what we ship and why. No noise — just the work.
+      </p>
+    </div>
+
+    <div class="update-list">
+      {
+        updates.map((entry) => (
+          <UpdateCard
+            title={entry.data.title}
+            description={entry.data.description}
+            pubDate={entry.data.pubDate}
+            href={withBase(`updates/${entry.id}`)}
+          />
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .narrow {
+    max-width: var(--maxw-prose);
+  }
+</style>

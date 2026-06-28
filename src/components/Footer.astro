@@ -1,0 +1,81 @@
+---
+import { withBase } from '../lib/url';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="footer-name">CosmoCrew</span>
+      <p>A small, independent software studio.</p>
+    </div>
+
+    <nav class="footer-nav" aria-label="Footer">
+      <a href={withBase('products')}>Products</a>
+      <a href={withBase('updates')}>Updates</a>
+      <a href={withBase('about')}>About</a>
+      <a href={withBase('support')}>Support</a>
+      <a
+        href="https://github.com/AnunnakiCosmoCrew"
+        rel="noopener noreferrer"
+        target="_blank">GitHub</a
+      >
+      <a href="mailto:contact@cosmocrew.dev">Contact</a>
+    </nav>
+  </div>
+
+  <div class="container footer-base">
+    <p>&copy; {year} CosmoCrew. All rights reserved.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--sp-9);
+    border-top: 1px solid var(--c-border);
+    padding-block: var(--sp-7) var(--sp-6);
+    color: var(--c-ink-soft);
+    background-color: var(--c-surface);
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-5) var(--sp-7);
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .footer-name {
+    font-weight: 650;
+    color: var(--c-ink);
+  }
+
+  .footer-brand p {
+    margin-top: var(--sp-1);
+    font-size: var(--fs-300);
+    color: var(--c-muted);
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3) var(--sp-5);
+  }
+
+  .footer-nav a {
+    color: var(--c-ink-soft);
+    font-size: var(--fs-400);
+  }
+
+  .footer-nav a:hover {
+    color: var(--c-ink);
+  }
+
+  .footer-base {
+    margin-top: var(--sp-6);
+    font-size: var(--fs-300);
+    color: var(--c-muted);
+  }
+</style>

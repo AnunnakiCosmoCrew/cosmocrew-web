@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+
+const products = (await getCollection('products')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<BaseLayout
+  title="Products — CosmoCrew"
+  description="The CosmoCrew lineup: SliceFocus for visual day planning and focus, and LexiPower for vocabulary practice. Both live on iOS."
+  path="products"
+>
+  <section class="container">
+    <div class="section-head">
+      <p class="eyebrow">Products</p>
+      <h1>What we&rsquo;ve made</h1>
+      <p class="lead">
+        A short, deliberate lineup. Each app is something we use ourselves and
+        keep refining.
+      </p>
+    </div>
+
+    <div class="product-grid">
+      {products.map((product) => <ProductCard product={product} />)}
+    </div>
+  </section>
+</BaseLayout>

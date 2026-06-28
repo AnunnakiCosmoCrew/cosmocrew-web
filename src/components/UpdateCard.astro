@@ -1,0 +1,69 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  href: string;
+}
+
+const { title, description, pubDate, href } = Astro.props;
+
+const dateLabel = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+const isoDate = pubDate.toISOString().split('T')[0];
+---
+
+<article class="update">
+  <time datetime={isoDate} class="update-date">{dateLabel}</time>
+  <h3 class="update-title">
+    <a href={href}>{title}</a>
+  </h3>
+  <p class="update-desc">{description}</p>
+  <a class="update-more" href={href}>Read update <span aria-hidden="true">&rarr;</span></a>
+</article>
+
+<style>
+  .update {
+    padding-block: var(--sp-6);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .update:first-child {
+    padding-top: 0;
+  }
+
+  .update-date {
+    font-size: var(--fs-300);
+    color: var(--c-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .update-title {
+    font-size: var(--fs-600);
+    margin-top: var(--sp-2);
+  }
+
+  .update-title a {
+    color: var(--c-ink);
+  }
+
+  .update-title a:hover {
+    color: var(--c-accent);
+  }
+
+  .update-desc {
+    margin-top: var(--sp-2);
+    color: var(--c-ink-soft);
+    max-width: var(--maxw-prose);
+  }
+
+  .update-more {
+    display: inline-block;
+    margin-top: var(--sp-3);
+    font-size: var(--fs-400);
+    font-weight: 550;
+  }
+</style>

@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const products = (await getCollection('products')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+// Per-product help link: prefer a dedicated support page, then the website,
+// then the App Store listing.
+const supportLinks = products.map((p) => ({
+  name: p.data.name,
+  href: p.data.links.support ?? p.data.links.website ?? p.data.links.appStore,
+}));
+---
+
+<BaseLayout
+  title="Support — CosmoCrew"
+  description="Get help with CosmoCrew apps. Find product support pages for SliceFocus and LexiPower, or contact us directly."
+  path="support"
+>
+  <section class="container narrow">
+    <div class="section-head">
+      <p class="eyebrow">Support</p>
+      <h1>Need a hand?</h1>
+      <p class="lead">
+        We&rsquo;re a small studio and we read everything. Start with the
+        product page for the app you&rsquo;re using, or email us directly.
+      </p>
+    </div>
+
+    <h2 class="group-title">Product support</h2>
+    <ul class="support-list">
+      {
+        supportLinks.map((item) => (
+          <li>
+            <span class="support-name">{item.name}</span>
+            {item.href ? (
+              <a href={item.href} rel="noopener noreferrer" target="_blank">
+                Help &amp; support
+              </a>
+            ) : (
+              <span class="support-muted">Contact us below</span>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 class="group-title">Contact</h2>
+    <p class="contact">
+      For anything else — questions, feedback, or bug reports — email
+      <a href="mailto:contact@cosmocrew.dev">contact@cosmocrew.dev</a>.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .narrow {
+    max-width: var(--maxw-prose);
+  }
+
+  .group-title {
+    font-size: var(--fs-500);
+    margin-top: var(--sp-7);
+    margin-bottom: var(--sp-4);
+  }
+
+  .support-list {
+    list-style: none;
+    padding: 0;
+    border-top: 1px solid var(--c-border);
+  }
+
+  .support-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-4);
+    align-items: baseline;
+    justify-content: space-between;
+    padding-block: var(--sp-4);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .support-name {
+    font-weight: 600;
+    color: var(--c-ink);
+  }
+
+  .support-muted {
+    color: var(--c-muted);
+    font-size: var(--fs-300);
+  }
+
+  .contact {
+    color: var(--c-ink-soft);
+  }
+</style>

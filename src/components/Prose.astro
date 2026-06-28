@@ -1,0 +1,58 @@
+---
+// Typographic wrapper for rendered Markdown bodies.
+---
+
+<div class="prose">
+  <slot />
+</div>
+
+<style>
+  .prose {
+    max-width: var(--maxw-prose);
+    color: var(--c-ink-soft);
+    font-size: var(--fs-500);
+  }
+
+  .prose :global(h2) {
+    color: var(--c-ink);
+    font-size: var(--fs-600);
+    margin-top: var(--sp-7);
+    margin-bottom: var(--sp-3);
+  }
+
+  .prose :global(h3) {
+    color: var(--c-ink);
+    font-size: var(--fs-500);
+    margin-top: var(--sp-6);
+    margin-bottom: var(--sp-2);
+  }
+
+  .prose :global(p) {
+    margin-bottom: var(--sp-5);
+    line-height: var(--lh-body);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin-bottom: var(--sp-5);
+    padding-left: var(--sp-5);
+  }
+
+  .prose :global(li) {
+    margin-bottom: var(--sp-2);
+  }
+
+  .prose :global(li::marker) {
+    color: var(--c-muted);
+  }
+
+  .prose :global(strong) {
+    color: var(--c-ink);
+    font-weight: 650;
+  }
+
+  .prose :global(a) {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>

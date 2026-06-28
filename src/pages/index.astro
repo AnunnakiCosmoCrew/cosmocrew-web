@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Button from '../components/Button.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { withBase } from '../lib/url';
+
+const featured = (await getCollection('products'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="CosmoCrew — calm, focused apps from a small studio"
+  description="CosmoCrew is a small independent software studio building quiet, well-made apps for focus and learning. SliceFocus and LexiPower are live on iOS."
+  path=""
+>
+  <Hero
+    eyebrow="Indie software studio"
+    title="Calm, focused apps from a small studio."
+    lead="CosmoCrew builds quiet, well-made software that does one thing clearly and respects your attention. Two apps are live today — with more made the same way, one at a time."
+  >
+    <Fragment slot="actions">
+      <Button href={withBase('products')}>Explore products</Button>
+      <Button
+        href="https://github.com/AnunnakiCosmoCrew"
+        variant="secondary"
+        external>View on GitHub</Button
+      >
+    </Fragment>
+  </Hero>
+
+  <section class="container">
+    <div class="section-head">
+      <p class="eyebrow">Live now</p>
+      <h2>Made with care</h2>
+    </div>
+    <div class="product-grid">
+      {featured.map((product) => <ProductCard product={product} />)}
+    </div>
+  </section>
+</BaseLayout>

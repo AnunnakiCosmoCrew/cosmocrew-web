@@ -1,0 +1,49 @@
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+
+/**
+ * Products shown on the public site. Single source of truth — the Home,
+ * Products, and product detail pages all derive from this collection, so the
+ * lineup can never drift to a product that does not exist here.
+ *
+ * `metricsEnabled` is part of the schema (per the data contract) but is never
+ * rendered and carries no data. No private metrics live anywhere in this repo.
+ */
+const products = defineCollection({
+  loader: glob({ base: './src/content/products', pattern: '**/*.md' }),
+  schema: z.object({
+    name: z.string(),
+    slug: z.string(),
+    tagline: z.string(),
+    description: z.string(),
+    status: z.enum(['Live', 'Beta', 'Archived']).default('Live'),
+    category: z.string(),
+    platform: z.string(),
+    links: z
+      .object({
+        website: z.url().optional(),
+        appStore: z.url().optional(),
+        github: z.url().optional(),
+        support: z.url().optional(),
+        docs: z.url().optional(),
+      })
+      .default({}),
+    featured: z.boolean().default(false),
+    metricsEnabled: z.boolean().default(false),
+    order: z.number().default(0),
+  }),
+});
+
+/** Updates / changelog posts. */
+const updates = defineCollection({
+  loader: glob({ base: './src/content/updates', pattern: '**/*.md' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().max(160),
+    pubDate: z.coerce.date(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { products, updates };
