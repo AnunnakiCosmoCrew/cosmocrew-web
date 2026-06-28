@@ -10,7 +10,7 @@ const year = new Date().getFullYear();
     <div class="footer-brand">
       <span class="footer-name">CosmoCrew</span>
       <p>Crafted software for focus &amp; learning.</p>
-      <a class="footer-support" href={koFiUrl} rel="noopener noreferrer" target="_blank"><span class="heart" aria-hidden="true">&#9829;</span> Support the crew</a>
+      <a class="footer-support" href={koFiUrl} rel="noopener noreferrer" target="_blank"><span class="heart" aria-hidden="true">&#9829;</span>Support the crew</a>
     </div>
 
     <nav class="footer-nav" aria-label="Footer">
@@ -61,18 +61,41 @@ const year = new Date().getFullYear();
   }
 
   .footer-support {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     margin-top: var(--sp-4);
-    font-size: var(--fs-300);
-    color: var(--c-ink-soft);
+    padding: 0.5rem 0.95rem;
+    font-size: var(--fs-400);
+    font-weight: 600;
+    color: var(--c-ink);
+    border: 1px solid color-mix(in srgb, var(--c-accent) 45%, var(--c-border));
+    border-radius: 999px;
+    transition:
+      color var(--dur) var(--ease),
+      background-color var(--dur) var(--ease),
+      border-color var(--dur) var(--ease),
+      transform var(--dur) var(--ease);
   }
 
   .footer-support:hover {
-    color: var(--c-accent);
+    color: var(--c-accent-contrast);
+    background-color: var(--c-accent);
+    border-color: var(--c-accent);
   }
 
   .footer-support .heart {
     color: var(--c-accent);
+    margin-right: var(--sp-2);
+  }
+
+  .footer-support:hover .heart {
+    color: var(--c-accent-contrast);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .footer-support:hover {
+      transform: translateY(-1px);
+    }
   }
 
   .footer-nav {
