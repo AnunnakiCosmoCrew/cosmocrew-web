@@ -7,6 +7,7 @@ status: Live
 category: Education
 platform: iOS
 links:
+  website: "https://lexipower.app"
   appStore: "https://apps.apple.com/app/id6766093282"
   support: "https://anunnakicosmocrew.github.io/lexipower-support/"
 featured: true

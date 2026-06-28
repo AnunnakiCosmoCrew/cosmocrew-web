@@ -35,15 +35,4 @@ const products = defineCollection({
   }),
 });
 
-/** Updates / changelog posts. */
-const updates = defineCollection({
-  loader: glob({ base: './src/content/updates', pattern: '**/*.md' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().max(160),
-    pubDate: z.coerce.date(),
-    draft: z.boolean().default(false),
-  }),
-});
-
-export const collections = { products, updates };
+export const collections = { products };

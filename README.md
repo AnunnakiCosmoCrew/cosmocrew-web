@@ -44,8 +44,7 @@ src/
 ├── layouts/         # BaseLayout (the page shell)
 ├── lib/url.ts       # withBase() / absoluteUrl() — base-path-safe links
 ├── content/
-│   ├── products/    # one Markdown file per product
-│   └── updates/     # changelog / blog posts
+│   └── products/    # one Markdown file per product
 ├── content.config.ts# content collection schemas
 ├── pages/           # routes (incl. dynamic [id].astro pages + 404)
 └── styles/          # tokens.css + global.css
@@ -58,8 +57,6 @@ public/              # favicon, og image, robots.txt, .nojekyll
   (`slicefocus.md` → `/products/slicefocus/`). Frontmatter fields are validated
   by the schema in `src/content.config.ts`; the `links` block only renders the
   keys you provide.
-- **Updates** live in `src/content/updates/*.md`. Set `draft: true` to hide a
-  post from the build.
 - The Home and Products pages derive entirely from the products collection, so
   there is a single source of truth for the lineup.
 
