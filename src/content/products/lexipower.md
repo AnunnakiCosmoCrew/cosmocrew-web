@@ -6,6 +6,7 @@ description: "An education app for building vocabulary with quizzes, spelling ch
 status: Live
 category: Education
 platform: iOS
+icon: "./icons/lexipower.png"
 links:
   website: "https://lexipower.app"
   appStore: "https://apps.apple.com/app/id6766093282"

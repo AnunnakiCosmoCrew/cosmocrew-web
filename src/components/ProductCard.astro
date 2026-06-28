@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 
 interface Props {
   product: CollectionEntry<'products'>;
@@ -33,22 +34,32 @@ const chips = chipDefs
 
 <article class="card">
   <div class="card-head">
-    <h3 class="card-title">
-      {
-        primaryHref ? (
-          <a
-            class="card-link"
-            href={primaryHref}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            {d.name}
-          </a>
-        ) : (
-          d.name
-        )
-      }
-    </h3>
+    <div class="card-id">
+      <Image
+        class="card-icon"
+        src={d.icon}
+        alt=""
+        width={112}
+        height={112}
+        loading="lazy"
+      />
+      <h3 class="card-title">
+        {
+          primaryHref ? (
+            <a
+              class="card-link"
+              href={primaryHref}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {d.name}
+            </a>
+          ) : (
+            d.name
+          )
+        }
+      </h3>
+    </div>
     <span
       class:list={['status', { 'status--live': d.status === 'Live' }]}
       title={`Status: ${d.status}`}
@@ -97,6 +108,21 @@ const chips = chipDefs
     align-items: center;
     justify-content: space-between;
     gap: var(--sp-3);
+  }
+
+  .card-id {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    min-width: 0;
+  }
+
+  .card-icon {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 22%; /* iOS-style rounding */
+    border: 1px solid var(--c-border);
   }
 
   .card-title {

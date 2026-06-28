@@ -10,7 +10,7 @@ interface Props {
   ogImage?: string;
 }
 
-const { title, description, path = '', ogImage = 'og.svg' } = Astro.props;
+const { title, description, path = '', ogImage = 'og.png' } = Astro.props;
 const canonical = absoluteUrl(path);
 const image = absoluteUrl(ogImage);
 ---

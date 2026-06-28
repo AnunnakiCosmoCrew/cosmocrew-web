@@ -6,6 +6,7 @@ description: "A productivity app for planning your day in time blocks and runnin
 status: Live
 category: Productivity
 platform: iOS
+icon: "./icons/slicefocus.png"
 links:
   website: "https://slicefocus.app"
   appStore: "https://apps.apple.com/app/id6761280632"
