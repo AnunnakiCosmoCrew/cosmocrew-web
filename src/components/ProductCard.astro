@@ -1,6 +1,5 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { withBase } from '../lib/url';
 
 interface Props {
   product: CollectionEntry<'products'>;
@@ -8,17 +7,26 @@ interface Props {
 
 const { product } = Astro.props;
 const d = product.data;
-const detailHref = withBase(`products/${product.id}`);
 
-const linkDefs = [
-  { key: 'website', label: 'Website' },
+// The whole card links to the app's live website (falls back to the next best
+// link if a product has no website).
+const primaryHref =
+  d.links.website ??
+  d.links.appStore ??
+  d.links.docs ??
+  d.links.support ??
+  d.links.github;
+
+// Secondary chips: everything present EXCEPT the website — the card itself is
+// the website link, so a separate "Website" chip would be redundant.
+const chipDefs = [
   { key: 'appStore', label: 'App Store' },
   { key: 'docs', label: 'Docs' },
   { key: 'support', label: 'Support' },
   { key: 'github', label: 'GitHub' },
 ] as const;
 
-const links = linkDefs
+const chips = chipDefs
   .map((def) => ({ ...def, href: d.links[def.key] }))
   .filter((l): l is typeof l & { href: string } => Boolean(l.href));
 ---
@@ -26,7 +34,20 @@ const links = linkDefs
 <article class="card">
   <div class="card-head">
     <h3 class="card-title">
-      <a href={detailHref}>{d.name}</a>
+      {
+        primaryHref ? (
+          <a
+            class="card-link"
+            href={primaryHref}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {d.name}
+          </a>
+        ) : (
+          d.name
+        )
+      }
     </h3>
     <span
       class:list={['status', { 'status--live': d.status === 'Live' }]}
@@ -41,9 +62,9 @@ const links = linkDefs
   <p class="card-meta">{d.category} &middot; {d.platform}</p>
 
   {
-    links.length > 0 && (
+    chips.length > 0 && (
       <div class="card-links">
-        {links.map((l) => (
+        {chips.map((l) => (
           <a
             class="chip"
             href={l.href}
@@ -60,6 +81,7 @@ const links = linkDefs
 
 <style>
   .card {
+    position: relative; /* anchor for the stretched card link */
     display: flex;
     flex-direction: column;
     gap: var(--sp-3);
@@ -81,11 +103,21 @@ const links = linkDefs
     font-size: var(--fs-600);
   }
 
-  .card-title a {
+  .card-link {
     color: var(--c-ink);
   }
 
-  .card-title a:hover {
+  /* Stretch the title link over the whole card so clicking anywhere (except the
+     chips) opens the website. */
+  .card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .card:hover .card-link,
+  .card-link:hover {
     color: var(--c-accent);
   }
 
@@ -120,6 +152,8 @@ const links = linkDefs
   }
 
   .card-links {
+    position: relative; /* sit above the stretched link */
+    z-index: 1;
     display: flex;
     flex-wrap: wrap;
     gap: var(--sp-2);

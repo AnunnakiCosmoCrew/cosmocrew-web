@@ -46,17 +46,17 @@ src/
 ├── content/
 │   └── products/    # one Markdown file per product
 ├── content.config.ts# content collection schemas
-├── pages/           # routes (incl. dynamic [id].astro pages + 404)
+├── pages/           # routes: home, products, about, support, 404
 └── styles/          # tokens.css + global.css
 public/              # favicon, og image, robots.txt, .nojekyll
 ```
 
 ### Editing content
 
-- **Products** live in `src/content/products/*.md`. The filename is the URL slug
-  (`slicefocus.md` → `/products/slicefocus/`). Frontmatter fields are validated
-  by the schema in `src/content.config.ts`; the `links` block only renders the
-  keys you provide.
+- **Products** live in `src/content/products/*.md` — one file per product.
+  Frontmatter is validated by the schema in `src/content.config.ts`. Each
+  product renders as a card (on Home and Products) whose body links to the
+  app's website; the `links` block only renders the chips you provide.
 - The Home and Products pages derive entirely from the products collection, so
   there is a single source of truth for the lineup.
 
