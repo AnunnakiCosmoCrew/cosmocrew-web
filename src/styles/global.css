@@ -87,11 +87,11 @@ a:hover {
 
 main {
   flex: 1 0 auto;
-  padding-block: var(--sp-8) var(--sp-9);
+  padding-block: var(--sp-6) var(--sp-8);
 }
 
 section + section {
-  margin-top: var(--sp-9);
+  margin-top: var(--sp-7);
 }
 
 .eyebrow {
