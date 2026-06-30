@@ -50,7 +50,10 @@ src/
 ├── pages/           # routes: home, products, about, support, 404
 └── styles/          # tokens.css + global.css
 public/              # favicon, og image, robots.txt, .nojekyll
+adr/                 # architecture decision records
 ```
+
+Significant architecture decisions are recorded in [`adr/`](adr/).
 
 ### Editing content
 
