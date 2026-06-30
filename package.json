@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Public website for CosmoCrew — calm, capable apps for focus and learning.",
+  "description": "Public website for CosmoCrew — calm, capable software, crafted to last.",
   "engines": {
     "node": ">=24"
   },
