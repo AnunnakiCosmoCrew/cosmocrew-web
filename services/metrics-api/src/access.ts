@@ -23,6 +23,11 @@ export interface AccessIdentity {
   raw: JWTPayload;
 }
 
+/** Trim and strip trailing slashes so JWKS URL and issuer match exactly. */
+function normalizeDomain(domain: string): string {
+  return domain.trim().replace(/\/+$/, '');
+}
+
 // Cache the JWKS in module scope so a warm isolate reuses Cloudflare's keys
 // instead of refetching them on every request.
 let jwks: ReturnType<typeof createRemoteJWKSet> | null = null;
@@ -54,8 +59,9 @@ export async function verifyAccessJwt(
     readCookie(request, 'CF_Authorization');
   if (!token) throw new Error('missing Cloudflare Access JWT');
 
-  const { payload } = await jwtVerify(token, getJwks(env.TEAM_DOMAIN), {
-    issuer: env.TEAM_DOMAIN,
+  const teamDomain = normalizeDomain(env.TEAM_DOMAIN);
+  const { payload } = await jwtVerify(token, getJwks(teamDomain), {
+    issuer: teamDomain,
     audience: env.POLICY_AUD,
   });
 

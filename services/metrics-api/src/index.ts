@@ -56,17 +56,36 @@ export default {
 /** Read the stored aggregate; fall back to a labelled sample if none exists yet. */
 async function readAggregate(env: Env): Promise<MetricsPayload> {
   const stored = await env.METRICS_KV.get(KV_KEY);
-  if (stored) return JSON.parse(stored) as MetricsPayload;
+  if (stored) {
+    try {
+      return JSON.parse(stored) as MetricsPayload;
+    } catch {
+      // Corrupt or hand-edited KV value — don't 500 the dashboard; serve the
+      // labelled sample so the UI stays up while the store is fixed.
+      console.error('METRICS_KV "latest" is not valid JSON; serving sample payload');
+    }
+  }
   return stubPayload();
 }
 
 function corsHeaders(env: Env): Record<string, string> {
+  const origin = env.ALLOWED_ORIGIN?.trim();
+  // A specific origin lets us safely allow credentials (needed for the
+  // Cloudflare Access cookie). `*` + credentials is invalid per the CORS spec
+  // and browsers block it, so without an explicit origin we drop credentials.
+  if (origin && origin !== '*') {
+    return {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Allow-Headers': 'cf-access-jwt-assertion, content-type',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      Vary: 'Origin',
+    };
+  }
   return {
-    'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN || '*',
-    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'cf-access-jwt-assertion, content-type',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    Vary: 'Origin',
   };
 }
 

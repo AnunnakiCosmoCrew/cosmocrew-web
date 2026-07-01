@@ -1,9 +1,14 @@
 ---
-/** Dashboard tabs: overview + one per app. Base is '/', so paths are absolute. */
+import { getMetrics } from '../lib/source';
+
+/**
+ * Dashboard tabs: overview + one per app, derived from the data source so the
+ * nav can't drift from the app pages (which are generated from the same list).
+ * Base is '/', so paths are absolute.
+ */
 const tabs = [
   { label: 'Overview', href: '/' },
-  { label: 'SliceFocus', href: '/apps/slicefocus' },
-  { label: 'LexiPower', href: '/apps/lexipower' },
+  ...getMetrics().apps.map((app) => ({ label: app.name, href: `/apps/${app.slug}` })),
 ];
 
 const current = (Astro.url.pathname.replace(/\/+$/, '') || '/').toLowerCase();
