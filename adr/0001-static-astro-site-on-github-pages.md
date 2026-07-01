@@ -44,3 +44,29 @@ Build the site with **Astro** (static output, TypeScript) and deploy it to
   clutter, which works against the minimal brief.
 - **Hand-written HTML/CSS** — no content modelling; adding a product would mean
   editing markup instead of data.
+
+### Other static-site generators
+
+All of these produce static output that would host fine on GitHub Pages; the
+choice came down to authoring ergonomics for a TypeScript/GitHub-centric team and
+the "minimal JS, single source of truth for products" brief.
+
+- **Eleventy (11ty)** — excellent, lightweight, also zero-JS by default, but has
+  no first-class component model or scoped styling out of the box and leans on
+  Nunjucks/Liquid templating. Astro's `.astro` components (JSX-like, scoped CSS)
+  and **typed** content collections were preferred for maintainability.
+- **Hugo** — extremely fast builds, but Go templating is unfamiliar to the team
+  and it sits outside the JS/TS ecosystem, making component authoring and shared
+  tooling more awkward for little benefit at this size.
+- **Gatsby** — React-based; ships a React runtime and pushes a GraphQL data layer
+  that is overkill for a handful of Markdown products, working against the
+  near-zero-JS goal.
+- **VitePress / Docusaurus** — strong SSGs but opinionated toward documentation
+  sites, not a marketing/brochure layout; we'd fight the theme.
+- **SvelteKit / Nuxt static export** — capable of static builds, but oriented
+  around an app/SSR model and ship a client framework runtime by default —
+  heavier than a static launcher needs.
+
+Astro was chosen as the one option that pairs **static output + near-zero client
+JS** with a **typed component model and content collections**, so adding a
+product is a data edit and internal links stay type-safe.

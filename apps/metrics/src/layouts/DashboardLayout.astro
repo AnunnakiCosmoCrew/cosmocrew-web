@@ -1,0 +1,212 @@
+---
+import '../styles/dashboard.css';
+import DashboardNav from '../components/DashboardNav.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Private CosmoCrew metrics dashboard.' } = Astro.props;
+const fullTitle = `${title} · CosmoCrew Metrics`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <header class="dash-header">
+      <div class="container dash-header-inner">
+        <a class="dash-brand" href="/" aria-label="CosmoCrew Metrics — overview">
+          <svg
+            class="dash-brand-mark"
+            viewBox="0 0 32 32"
+            width="26"
+            height="26"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <circle cx="16" cy="16" r="10" fill="none" stroke="currentColor" stroke-width="2"
+            ></circle>
+            <circle cx="23.1" cy="8.9" r="3" fill="currentColor"></circle>
+          </svg>
+          <span class="dash-brand-name"
+            >CosmoCrew<span class="sep">/</span><span class="kicker">Metrics</span></span
+          >
+        </a>
+        <span class="dash-badge">Private · sample data</span>
+      </div>
+    </header>
+
+    <DashboardNav />
+
+    <main>
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+
+    <footer class="dash-footer">
+      <div class="container">
+        <span>Private dashboard — gated at the edge by Cloudflare Access. Not indexed, not public.</span>
+        <span>Showing synthetic sample data</span>
+      </div>
+    </footer>
+
+    <script>
+      import Chart from 'chart.js/auto';
+      import {
+        compact,
+        currencyCompact,
+        rating as fmtRating,
+        percent as fmtPercent,
+      } from '../lib/format';
+
+      type Fmt = 'number' | 'currency' | 'rating' | 'percent';
+      interface RawDataset {
+        label: string;
+        data: number[];
+        color?: string;
+        fill?: boolean;
+      }
+      interface RawConfig {
+        type: 'line' | 'bar';
+        labels: string[];
+        datasets: RawDataset[];
+        format: Fmt;
+      }
+
+      const root = getComputedStyle(document.documentElement);
+      const token = (name: string): string => root.getPropertyValue(name).trim();
+
+      const palette: Record<string, string> = {
+        accent: token('--c-accent') || '#6e72d6',
+        ok: token('--c-ok') || '#3f9d72',
+        slate: token('--c-muted') || '#80828d',
+      };
+      const inkSoft = token('--c-ink-soft') || '#494b55';
+      const gridColor = token('--c-border') || '#e7e7e2';
+      const muted = token('--c-muted') || '#80828d';
+
+      Chart.defaults.font.family = token('--font-sans') || 'system-ui, sans-serif';
+      Chart.defaults.color = inkSoft;
+      Chart.defaults.borderColor = gridColor;
+
+      function hexToRgba(hex: string, alpha: number): string {
+        const h = hex.replace('#', '');
+        const full =
+          h.length === 3
+            ? h
+                .split('')
+                .map((c) => c + c)
+                .join('')
+            : h;
+        const r = parseInt(full.slice(0, 2), 16);
+        const g = parseInt(full.slice(2, 4), 16);
+        const b = parseInt(full.slice(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+
+      function formatter(fmt: Fmt): (v: number) => string {
+        if (fmt === 'currency') return currencyCompact;
+        if (fmt === 'rating') return fmtRating;
+        if (fmt === 'percent') return fmtPercent;
+        return compact;
+      }
+
+      const canvases = document.querySelectorAll<HTMLCanvasElement>('canvas[data-chart]');
+      canvases.forEach((canvas) => {
+        const cfgId = canvas.dataset.config;
+        if (!cfgId) return;
+        const cfgEl = document.getElementById(cfgId);
+        if (!cfgEl || !cfgEl.textContent) return;
+        const spec = JSON.parse(cfgEl.textContent) as RawConfig;
+        const fmt = formatter(spec.format);
+
+        const datasets: any[] = spec.datasets.map((d) => {
+          const color = palette[d.color ?? 'accent'] ?? palette.accent;
+          if (spec.type === 'bar') {
+            return {
+              label: d.label,
+              data: d.data,
+              backgroundColor: color,
+              borderRadius: 6,
+              maxBarThickness: 40,
+            };
+          }
+          return {
+            label: d.label,
+            data: d.data,
+            borderColor: color,
+            backgroundColor: d.fill ? hexToRgba(color, 0.14) : color,
+            fill: d.fill ? 'origin' : false,
+            tension: 0.35,
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointBackgroundColor: color,
+            pointBorderColor: color,
+          };
+        });
+
+        const isRating = spec.format === 'rating';
+        const yScale: any = {
+          beginAtZero: !isRating,
+          grid: { color: gridColor, drawTicks: false },
+          border: { display: false },
+          ticks: { color: muted, padding: 8, callback: (v: number) => fmt(Number(v)) },
+        };
+        if (isRating) {
+          yScale.min = 4;
+          yScale.max = 5;
+          yScale.ticks.stepSize = 0.2;
+        }
+
+        const options: any = {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              display: spec.datasets.length > 1,
+              position: 'bottom',
+              labels: {
+                usePointStyle: true,
+                pointStyle: 'circle',
+                boxWidth: 8,
+                padding: 16,
+                color: inkSoft,
+              },
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx: any) => ` ${ctx.dataset.label}: ${fmt(Number(ctx.parsed.y))}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              border: { color: gridColor },
+              ticks: { color: muted, padding: 6 },
+            },
+            y: yScale,
+          },
+        };
+
+        new Chart(canvas, {
+          type: spec.type,
+          data: { labels: spec.labels, datasets },
+          options,
+        });
+      });
+    </script>
+  </body>
+</html>

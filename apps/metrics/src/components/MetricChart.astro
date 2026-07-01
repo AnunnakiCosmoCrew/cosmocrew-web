@@ -1,0 +1,50 @@
+---
+/**
+ * A titled chart card. The chart config is emitted as an inline JSON island next
+ * to the canvas; a single hydrator in DashboardLayout reads every island and
+ * renders it with Chart.js, themed from the CSS design tokens (light/dark aware).
+ */
+export interface ChartDataset {
+  label: string;
+  data: number[];
+  color?: 'accent' | 'ok' | 'slate';
+  /** Fill the area under a line. */
+  fill?: boolean;
+}
+
+interface Props {
+  id: string;
+  title: string;
+  subtitle?: string;
+  type?: 'line' | 'bar';
+  labels: readonly string[] | string[];
+  datasets: ChartDataset[];
+  format?: 'number' | 'currency' | 'rating' | 'percent';
+  height?: number;
+}
+
+const {
+  id,
+  title,
+  subtitle,
+  type = 'line',
+  labels,
+  datasets,
+  format = 'number',
+  height = 260,
+} = Astro.props;
+
+const config = { type, labels, datasets, format };
+---
+
+<figure class="chart-card">
+  <figcaption class="chart-head">
+    <h3>{title}</h3>
+    {subtitle && <p class="chart-sub">{subtitle}</p>}
+  </figcaption>
+  <div class="chart-canvas-wrap" style={`height:${height}px`}>
+    <canvas id={id} data-chart data-config={`${id}-cfg`} role="img" aria-label={title}></canvas>
+  </div>
+  <script type="application/json" is:inline set:html={JSON.stringify(config)} id={`${id}-cfg`}
+  ></script>
+</figure>

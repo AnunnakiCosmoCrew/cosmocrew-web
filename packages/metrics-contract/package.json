@@ -1,0 +1,18 @@
+{
+  "name": "@cosmocrew/metrics-contract",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared wire contract for CosmoCrew metrics — the payload shape the metrics-api Worker returns and the dashboard consumes. Types + a version const; no data, no secrets.",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ]
+}

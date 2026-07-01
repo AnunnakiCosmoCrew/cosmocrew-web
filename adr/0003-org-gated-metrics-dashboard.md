@@ -1,12 +1,15 @@
 # 3. Org-gated metrics dashboard via Cloudflare Access + GitHub
 
-- Status: Accepted (planned — not yet implemented)
+- Status: Accepted (planned — not yet implemented). Repo placement superseded by
+  [ADR 0005](0005-metrics-dashboard-in-monorepo.md); the Cloudflare Access +
+  pipeline design below still stands.
 - Date: 2026-06-30
 - Deciders: CosmoCrew
 
-> Implementation will live in the `cosmocrew-metrics` repo, not in
-> `cosmocrew-web`. This record captures the decision; mirror or move it to that
-> repo when the work begins.
+> **Update (see [ADR 0005](0005-metrics-dashboard-in-monorepo.md)):** the code now
+> lives in this repo as `apps/metrics`, deployed *separately* to Cloudflare — not
+> in a standalone `cosmocrew-metrics` repo. The original plan (a separate repo)
+> is preserved below for context; the security architecture is unchanged.
 
 ## Context
 

@@ -1,0 +1,123 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import StatCard from '../../components/StatCard.astro';
+import MetricChart from '../../components/MetricChart.astro';
+import { getMetrics } from '../../lib/source';
+import type { AppMetricsDTO } from '@cosmocrew/metrics-contract';
+import { number, currency, rating as fmtRating, pctDelta, pointDelta } from '../../lib/format';
+
+export function getStaticPaths() {
+  return getMetrics().apps.map((app) => ({ params: { slug: app.slug }, props: { app } }));
+}
+
+interface Props {
+  app: AppMetricsDTO;
+}
+
+const { app } = Astro.props;
+const labels = getMetrics().months;
+const last = labels.length - 1;
+const prev = last - 1;
+const m = app.months;
+
+const totalDownloads = m.reduce((s, x) => s + x.downloads, 0);
+const totalRevenue = m.reduce((s, x) => s + x.revenue, 0);
+
+const downloads = [
+  { label: 'New', color: app.color, data: m.map((x) => x.downloads) },
+  { label: 'Redownloads', color: 'slate' as const, data: m.map((x) => x.redownloads) },
+];
+const revenue = [
+  { label: app.name, color: app.color, fill: true, data: m.map((x) => x.revenue) },
+];
+const mau = [{ label: app.name, color: app.color, data: m.map((x) => x.mau) }];
+const ratings = [{ label: app.name, color: app.color, data: m.map((x) => x.rating) }];
+const retention = [
+  { label: 'Retention', color: app.color, fill: true, data: app.retention.map((r) => r.pct) },
+];
+const retentionLabels = app.retention.map((r) => r.label);
+---
+
+<DashboardLayout title={app.name}>
+  <div class="page-head">
+    <p class="eyebrow">{app.name} · last 12 months</p>
+    <h1>{app.name}</h1>
+    <p class="lead">
+      Downloads, revenue, engagement, retention, and ratings for {app.name}.
+    </p>
+  </div>
+
+  <section aria-label="Key metrics">
+    <div class="kpi-grid">
+      <StatCard
+        label="Downloads (12 mo)"
+        value={number(totalDownloads)}
+        delta={pctDelta(m[last].downloads, m[prev].downloads)}
+        hint="vs. previous month"
+      />
+      <StatCard
+        label="Revenue (12 mo)"
+        value={currency(totalRevenue)}
+        delta={pctDelta(m[last].revenue, m[prev].revenue)}
+        hint="vs. previous month"
+      />
+      <StatCard
+        label="Active users (MAU)"
+        value={number(m[last].mau)}
+        delta={pctDelta(m[last].mau, m[prev].mau)}
+        hint="latest month"
+      />
+      <StatCard
+        label="Avg rating"
+        value={fmtRating(m[last].rating)}
+        delta={pointDelta(m[last].rating, m[prev].rating)}
+        hint="latest month"
+      />
+    </div>
+  </section>
+
+  <section aria-label="Trends">
+    <div class="chart-grid">
+      <MetricChart
+        id={`${app.slug}-downloads`}
+        title="Downloads"
+        subtitle="New vs. redownloads"
+        labels={labels}
+        datasets={downloads}
+        format="number"
+      />
+      <MetricChart
+        id={`${app.slug}-revenue`}
+        title="Revenue"
+        subtitle="Proceeds per month (USD)"
+        labels={labels}
+        datasets={revenue}
+        format="currency"
+      />
+      <MetricChart
+        id={`${app.slug}-mau`}
+        title="Active users"
+        subtitle="Monthly active users"
+        labels={labels}
+        datasets={mau}
+        format="number"
+      />
+      <MetricChart
+        id={`${app.slug}-retention`}
+        title="Retention"
+        subtitle="Share of installs still active"
+        labels={retentionLabels}
+        datasets={retention}
+        format="percent"
+      />
+      <MetricChart
+        id={`${app.slug}-rating`}
+        title="Rating"
+        subtitle="Average App Store rating"
+        labels={labels}
+        datasets={ratings}
+        format="rating"
+      />
+    </div>
+  </section>
+</DashboardLayout>

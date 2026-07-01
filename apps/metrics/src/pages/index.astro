@@ -1,0 +1,133 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import StatCard from '../components/StatCard.astro';
+import MetricChart from '../components/MetricChart.astro';
+import { getMetrics } from '../lib/source';
+import { number, currency, rating as fmtRating, pctDelta, pointDelta } from '../lib/format';
+
+const { apps, months: labels } = getMetrics();
+const last = labels.length - 1;
+const prev = last - 1;
+
+// Per-app series, each keeping its identity color across every chart.
+const downloads = apps.map((a) => ({
+  label: a.name,
+  color: a.color,
+  data: a.months.map((m) => m.downloads),
+}));
+const revenue = apps.map((a) => ({
+  label: a.name,
+  color: a.color,
+  fill: true,
+  data: a.months.map((m) => m.revenue),
+}));
+const mau = apps.map((a) => ({
+  label: a.name,
+  color: a.color,
+  data: a.months.map((m) => m.mau),
+}));
+const ratings = apps.map((a) => ({
+  label: a.name,
+  color: a.color,
+  data: a.months.map((m) => m.rating),
+}));
+
+// Combined KPIs.
+const monthTotal = (idx: number, key: 'downloads' | 'revenue' | 'mau') =>
+  apps.reduce((t, a) => t + a.months[idx][key], 0);
+
+const totalDownloads = apps.reduce(
+  (t, a) => t + a.months.reduce((s, m) => s + m.downloads, 0),
+  0,
+);
+const totalRevenue = apps.reduce(
+  (t, a) => t + a.months.reduce((s, m) => s + m.revenue, 0),
+  0,
+);
+
+function weightedRating(idx: number): number {
+  const totReviews = apps.reduce((t, a) => t + a.months[idx].reviews, 0);
+  if (!totReviews) return 0;
+  return (
+    apps.reduce((t, a) => t + a.months[idx].rating * a.months[idx].reviews, 0) / totReviews
+  );
+}
+const lastRating = weightedRating(last);
+const prevRating = weightedRating(prev);
+---
+
+<DashboardLayout title="Overview">
+  <div class="page-head">
+    <p class="eyebrow">All apps · last 12 months</p>
+    <h1>How the apps are doing</h1>
+    <p class="lead">
+      Downloads, revenue, active users, and ratings across the CosmoCrew lineup.
+    </p>
+  </div>
+
+  <section aria-label="Key metrics">
+    <div class="kpi-grid">
+      <StatCard
+        label="Downloads (12 mo)"
+        value={number(totalDownloads)}
+        delta={pctDelta(monthTotal(last, 'downloads'), monthTotal(prev, 'downloads'))}
+        hint="vs. previous month"
+      />
+      <StatCard
+        label="Revenue (12 mo)"
+        value={currency(totalRevenue)}
+        delta={pctDelta(monthTotal(last, 'revenue'), monthTotal(prev, 'revenue'))}
+        hint="vs. previous month"
+      />
+      <StatCard
+        label="Active users (MAU)"
+        value={number(monthTotal(last, 'mau'))}
+        delta={pctDelta(monthTotal(last, 'mau'), monthTotal(prev, 'mau'))}
+        hint="latest month"
+      />
+      <StatCard
+        label="Avg rating"
+        value={fmtRating(lastRating)}
+        delta={pointDelta(lastRating, prevRating)}
+        hint="review-weighted"
+      />
+    </div>
+  </section>
+
+  <section aria-label="Trends">
+    <div class="chart-grid">
+      <MetricChart
+        id="ov-downloads"
+        title="Downloads"
+        subtitle="New installs per month"
+        labels={labels}
+        datasets={downloads}
+        format="number"
+      />
+      <MetricChart
+        id="ov-revenue"
+        title="Revenue"
+        subtitle="Proceeds per month (USD)"
+        labels={labels}
+        datasets={revenue}
+        format="currency"
+      />
+      <MetricChart
+        id="ov-mau"
+        title="Active users"
+        subtitle="Monthly active users"
+        labels={labels}
+        datasets={mau}
+        format="number"
+      />
+      <MetricChart
+        id="ov-rating"
+        title="Rating"
+        subtitle="Average App Store rating"
+        labels={labels}
+        datasets={ratings}
+        format="rating"
+      />
+    </div>
+  </section>
+</DashboardLayout>

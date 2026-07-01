@@ -1,0 +1,4 @@
+# Private dashboard — not for indexing. Access is enforced at the edge by
+# Cloudflare Access; this is belt-and-suspenders for any crawler that slips past.
+User-agent: *
+Disallow: /

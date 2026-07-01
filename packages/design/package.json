@@ -1,0 +1,13 @@
+{
+  "name": "@cosmocrew/design",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared CosmoCrew design tokens — the single source of truth for color, type, and spacing across the public site and the metrics dashboard.",
+  "exports": {
+    "./tokens.css": "./tokens.css"
+  },
+  "files": [
+    "tokens.css"
+  ]
+}

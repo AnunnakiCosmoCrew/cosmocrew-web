@@ -10,8 +10,20 @@ support, and docs.
 - **Hosting:** GitHub Pages, deployed via GitHub Actions
 - **Live URL:** https://anunnakicosmocrew.github.io/cosmocrew-web/
 
-This repository contains **public content only**. It holds no private data and
-no authentication — see [Future private metrics dashboard](#future-private-metrics-dashboard).
+This repo is a small **npm-workspaces monorepo**:
+
+| Workspace                  | What it is                                       | Deploys to                                |
+| -------------------------- | ------------------------------------------------ | ----------------------------------------- |
+| `apps/web`                 | the public website (this README's subject)       | GitHub Pages                              |
+| `apps/metrics`             | private metrics dashboard (crew-only)            | Cloudflare Pages @ `metrics.cosmocrew.dev` |
+| `services/metrics-api`     | gated Worker that serves the dashboard's data    | Cloudflare Workers                        |
+| `packages/design`          | shared design tokens (single source of truth)    | —                                         |
+| `packages/metrics-contract`| shared types for the metrics API payload         | —                                         |
+
+**The public GitHub Pages build (`apps/web`) contains public content only** — no
+private data and no authentication. The metrics dashboard lives in the same repo
+but is built and deployed **separately** and is never part of the Pages build —
+see [Private metrics dashboard](#private-metrics-dashboard) and `adr/0002`, `adr/0005`.
 
 ## Requirements
 
@@ -23,42 +35,60 @@ no authentication — see [Future private metrics dashboard](#future-private-met
 
 ## Commands
 
-Run from the project root:
+Run from the repo root (scripts fan out to the workspaces):
 
-| Command           | Action                                                        |
-| ----------------- | ------------------------------------------------------------- |
-| `npm install`     | Install dependencies                                          |
-| `npm run dev`     | Start the dev server at `http://localhost:4321/cosmocrew-web/` |
-| `npm run check`   | Type-check the project and content schemas (`astro check`)    |
-| `npm run build`   | Build the static site to `dist/`                              |
-| `npm run preview` | Preview the built site at `http://localhost:4321/cosmocrew-web/` |
+| Command                 | Action                                                             |
+| ----------------------- | ----------------------------------------------------------------- |
+| `npm install`           | Install all workspace dependencies                                |
+| `npm run dev`           | Start the **public site** dev server at `http://localhost:4321/cosmocrew-web/` |
+| `npm run dev:metrics`   | Start the **metrics dashboard** dev server (served from `/`)      |
+| `npm run dev:api`       | Run the **metrics API** Worker locally (`wrangler dev`)           |
+| `npm run build:web`     | Build the public site to `apps/web/dist/` (this is what ships)    |
+| `npm run build:metrics` | Build the dashboard to `apps/metrics/dist/`                       |
+| `npm run build`         | Build every workspace                                             |
+| `npm run check`         | Type-check every workspace (`astro check` / `tsc`)               |
+| `npm run deploy:api`    | Deploy the metrics API Worker (`wrangler deploy`)                 |
 
-> **Note the base path.** The site is served from `/cosmocrew-web/`, so the dev
-> and preview servers live at `http://localhost:4321/cosmocrew-web/`, not the
-> bare root.
+> **Note the base path.** The public site is served from `/cosmocrew-web/`, so its
+> dev and preview servers live at `http://localhost:4321/cosmocrew-web/`, not the
+> bare root. The dashboard is served from `/`.
 
 ## Project structure
 
 ```
-src/
-├── components/      # Nav, Footer, Hero, ProductCard, Button, Prose, …
-├── layouts/         # BaseLayout (the page shell)
-├── lib/url.ts       # withBase() / absoluteUrl() — base-path-safe links
-├── content/
-│   └── products/    # one Markdown file per product
-├── content.config.ts# content collection schemas
-├── pages/           # routes: home, products, about, support, 404
-└── styles/          # tokens.css + global.css
-public/              # favicon, og image, robots.txt, .nojekyll
-adr/                 # architecture decision records
+apps/
+├── web/                    # PUBLIC site → GitHub Pages
+│   ├── src/
+│   │   ├── components/      # Nav, Footer, Hero, ProductCard, Button, Prose, …
+│   │   ├── layouts/         # BaseLayout (the page shell)
+│   │   ├── lib/url.ts       # withBase() / absoluteUrl() — base-path-safe links
+│   │   ├── content/products/# one Markdown file per product
+│   │   ├── content.config.ts# content collection schemas
+│   │   ├── pages/           # routes: home, products, about, support, 404
+│   │   └── styles/          # global.css (imports the shared tokens)
+│   └── public/              # favicon, og image, robots.txt, .nojekyll
+└── metrics/                # PRIVATE dashboard → Cloudflare (deployed separately)
+    └── src/
+        ├── layouts/         # DashboardLayout (+ Chart.js hydrator)
+        ├── components/       # StatCard, MetricChart, DashboardNav
+        ├── lib/              # metrics.ts (SAMPLE data), source.ts (data seam), format.ts
+        └── pages/            # overview + apps/[slug]
+services/
+└── metrics-api/            # PRIVATE Worker → Cloudflare (Access-gated data API)
+    ├── wrangler.toml       # Worker config: KV binding, cron, Access vars
+    └── src/                # index.ts (routes + scheduled), access.ts (JWT verify), sample.ts
+packages/
+├── design/                 # shared design tokens (tokens.css)
+└── metrics-contract/       # shared types for the /api/metrics payload
+adr/                        # architecture decision records
 ```
 
 Significant architecture decisions are recorded in [`adr/`](adr/).
 
 ### Editing content
 
-- **Products** live in `src/content/products/*.md` — one file per product.
-  Frontmatter is validated by the schema in `src/content.config.ts`. Each
+- **Products** live in `apps/web/src/content/products/*.md` — one file per product.
+  Frontmatter is validated by the schema in `apps/web/src/content.config.ts`. Each
   product renders as a card (on Home and Products) whose body links to the
   app's website; the `links` block only renders the chips you provide.
 - The Home and Products pages derive entirely from the products collection, so
@@ -82,63 +112,98 @@ is also what makes the custom-domain switch below a one-line change.
 
 ## Deployment
 
-Deployment is automated with GitHub Actions (`.github/workflows/deploy.yml`):
-on every push to `main` (or a manual run from the **Actions** tab) the official
-`withastro/action` builds the site and `actions/deploy-pages` publishes it.
+The **public site** is deployed automatically with GitHub Actions
+(`.github/workflows/deploy.yml`): on every push to `main` (or a manual run from
+the **Actions** tab) it installs the workspace from the root lockfile, runs
+`npm run build:web`, and publishes **only `apps/web/dist`** with
+`actions/deploy-pages`. The metrics app is never built or uploaded here.
 
 **One-time setup:** in the repository, go to **Settings → Pages → Build and
 deployment → Source** and select **GitHub Actions**. After that, every push to
 `main` deploys automatically.
 
+The **metrics dashboard** (`apps/metrics`) deploys separately to Cloudflare Pages
+— see [Private metrics dashboard](#private-metrics-dashboard).
+
 ## Switching base path / custom domain
 
-We own `cosmocrew.dev`. To serve the site there instead of the GitHub project
-URL, make these three changes:
+We own `cosmocrew.dev`. To serve the **public site** there instead of the GitHub
+project URL, make these three changes:
 
-1. In `astro.config.mjs`, set:
+1. In `apps/web/astro.config.mjs`, set:
    ```js
    site: 'https://cosmocrew.dev',
    base: '/',
    ```
-2. Add a file `public/CNAME` containing exactly:
+2. Add a file `apps/web/public/CNAME` containing exactly:
    ```
    cosmocrew.dev
    ```
 3. Point DNS at GitHub Pages (a `CNAME`/`ALIAS` record for the apex domain) and
    set the custom domain under **Settings → Pages**. Update the `Sitemap:` URL in
-   `public/robots.txt` to the new domain.
+   `apps/web/public/robots.txt` to the new domain.
 
 No template or content edits are needed — every internal link uses `withBase()`,
 which automatically resolves against the new base.
 
-## Future private metrics dashboard
+## Private metrics dashboard
 
-We eventually want crew members to log in and view **private CosmoCrew metrics**.
-That is intentionally **not** part of this site, and must never be.
+Crew members view **private CosmoCrew metrics** (downloads, revenue, usage) in the
+`apps/metrics` dashboard. It lives in this monorepo but is **built and deployed
+entirely separately** from the public site, and must **never** become part of the
+GitHub Pages build.
 
-**This repository is a public, static GitHub Pages site.** Anything committed
-here — HTML, JavaScript, JSON, Markdown, environment variables — is world-readable
-once deployed. GitHub Pages cannot host private data and cannot perform real
-authentication. Client-side "checks" such as `if (isCrewMember) showMetrics()`
-are **not** security; the data would still ship to every visitor. Therefore this
-repo contains **zero** private metrics and **no** gating logic.
+**The public GitHub Pages build (`apps/web`) is world-readable.** Anything in it —
+HTML, JavaScript, JSON, Markdown, environment variables — ships to every visitor.
+GitHub Pages cannot host private data or perform real authentication, and
+client-side "checks" such as `if (isCrewMember) showMetrics()` are **not**
+security. So the Pages artifact contains **zero** private metrics and **no**
+gating logic — the CI job builds only `apps/web`.
 
-Private metrics belong in a **separate, authenticated application** on its own
+The dashboard is served from a **separate, authenticated deployment** on its own
 subdomain:
 
-| Surface                 | What it serves                          | Auth                          |
-| ----------------------- | --------------------------------------- | ----------------------------- |
-| `cosmocrew.dev`         | This public site (product showcase)     | None — public                 |
-| `metrics.cosmocrew.dev` | Private metrics dashboard (future)      | Required — see below          |
+| Surface                 | What it serves                              | Deploy          | Auth                          |
+| ----------------------- | ------------------------------------------- | --------------- | ----------------------------- |
+| `cosmocrew.dev`         | public site (`apps/web`, product showcase)  | GitHub Pages    | None — public                 |
+| `metrics.cosmocrew.dev` | private dashboard (`apps/metrics`)          | Cloudflare Pages | Cloudflare Access (GitHub org) |
 
-**Recommended future authentication** for the metrics app:
+**Authentication** (per `adr/0003`): the dashboard sits behind **Cloudflare
+Access** with **GitHub login** as the identity provider, restricted to members of
+the **`AnunnakiCosmoCrew`** organization, enforced at the edge before the app
+loads. Secrets and API keys stay server-side; no private data reaches the browser
+build.
 
-- Put it behind **Cloudflare Access**.
-- Use **GitHub login** as the identity provider.
-- Restrict access to **members of the `AnunnakiCosmoCrew` GitHub organization**.
+### Data flow
 
-The dashboard would be deployed and secured entirely separately from this
-repository. No private data or access-control logic should ever be added here.
+```
+App Store Connect ┐                    ┌ services/metrics-api (Worker)
+Firebase / GA     ┼─ scheduled pull ─▶ │  • verifies the Cloudflare Access JWT
+                  ┘                    │  • reads the aggregate from KV
+                                       └────────────── /api/metrics ──────────▶ apps/metrics
+                                                    (MetricsPayload contract)      (charts)
+```
+
+- **`packages/metrics-contract`** is the single shape both sides agree on
+  (`MetricsPayload`). The dashboard reads its data through one seam,
+  `apps/metrics/src/lib/source.ts` — sample data today, a runtime `fetch` of
+  `/api/metrics` in production.
+- **`services/metrics-api`** is a Cloudflare Worker. It independently verifies the
+  Access JWT (`cf-access-jwt-assertion` → Cloudflare JWKS, `iss`/`aud` checked) as
+  defense in depth, then serves the aggregate from a KV store. A cron-triggered
+  `scheduled()` handler is where the App Store Connect / Firebase pull will land.
+  All credentials are Worker **secrets** (`wrangler secret put …`), never committed.
+
+### Status by phase (see `adr/0005`)
+
+- **Phase 1 — done.** Dashboard UI renders **synthetic sample data**
+  (`apps/metrics/src/lib/metrics.ts`); no real numbers in the repo. The Worker
+  skeleton exists and its `/api/metrics` returns a labelled sample.
+- **Phase 2 — external.** Deploy `apps/metrics` to Cloudflare Pages, point DNS at
+  `metrics.cosmocrew.dev`, and add the Cloudflare Access policy. Set the Worker's
+  `POLICY_AUD` / `TEAM_DOMAIN` and create the `METRICS_KV` namespace.
+- **Phase 3 — the pipeline.** Implement `scheduled()` (App Store Connect + Firebase
+  → aggregate → KV) and switch the dashboard's `source.ts` to fetch `/api/metrics`.
 
 ## License
 

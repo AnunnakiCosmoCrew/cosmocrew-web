@@ -10,8 +10,10 @@ supersedes the old one and mark the old one **Superseded**.
 | ------------------------------------------------ | -------------------------------------------------------------- | ----------------- |
 | [0001](0001-static-astro-site-on-github-pages.md) | Public site is an Astro static site on GitHub Pages            | Accepted          |
 | [0002](0002-no-private-data-in-the-public-site.md) | No private data or auth in the public site                     | Accepted          |
-| [0003](0003-org-gated-metrics-dashboard.md)       | Org-gated metrics dashboard via Cloudflare Access + GitHub     | Accepted (planned) |
+| [0003](0003-org-gated-metrics-dashboard.md)       | Org-gated metrics dashboard via Cloudflare Access + GitHub     | Accepted (planned); placement superseded by 0005 |
 | [0004](0004-cards-link-to-app-sites.md)           | Product cards link to the apps' own sites; no detail pages     | Accepted          |
+| [0005](0005-metrics-dashboard-in-monorepo.md)     | Metrics dashboard lives in this monorepo, deployed separately  | Accepted          |
 
-> ADR 0003 describes a separate future app. Its implementation will live in the
-> `cosmocrew-metrics` repo — mirror/move this record there when that work begins.
+> ADR 0003's security design (Cloudflare Access + pipeline) still stands. Per ADR
+> 0005 the dashboard code lives here as `apps/metrics`, deployed *separately* to
+> Cloudflare — never to GitHub Pages — so the ADR 0002 boundary is preserved.
