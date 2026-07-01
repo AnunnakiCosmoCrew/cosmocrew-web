@@ -1,0 +1,30 @@
+---
+import type { Delta } from '../lib/format';
+
+interface Props {
+  label: string;
+  value: string;
+  delta?: Delta;
+  hint?: string;
+}
+
+const { label, value, delta, hint } = Astro.props;
+
+const arrow = delta ? (delta.dir === 'up' ? '▲' : delta.dir === 'down' ? '▼' : '→') : '';
+---
+
+<div class="stat-card">
+  <span class="stat-label">{label}</span>
+  <div class="stat-row">
+    <span class="stat-value">{value}</span>
+    {
+      delta && (
+        <span class={`stat-delta ${delta.dir}`}>
+          <span aria-hidden="true">{arrow}</span>
+          {delta.text}
+        </span>
+      )
+    }
+  </div>
+  {hint && <span class="stat-hint">{hint}</span>}
+</div>

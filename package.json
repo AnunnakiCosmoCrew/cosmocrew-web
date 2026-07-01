@@ -1,25 +1,26 @@
 {
-  "name": "cosmocrew-web",
+  "name": "cosmocrew-monorepo",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Public website for CosmoCrew — calm, capable software, crafted to last.",
+  "description": "CosmoCrew monorepo — the public website (apps/web) and the private metrics dashboard (apps/metrics), sharing one design system (packages/design).",
   "engines": {
     "node": ">=24"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "check": "astro check"
-  },
-  "dependencies": {
-    "@astrojs/sitemap": "^3.7.3",
-    "astro": "^7.0.3"
-  },
-  "devDependencies": {
-    "@astrojs/check": "^0.9.9",
-    "typescript": "^6.0.3"
+    "dev": "npm run dev --workspace @cosmocrew/web",
+    "dev:web": "npm run dev --workspace @cosmocrew/web",
+    "dev:metrics": "npm run dev --workspace @cosmocrew/metrics",
+    "dev:api": "npm run dev --workspace @cosmocrew/metrics-api",
+    "build": "npm run build --workspaces --if-present",
+    "build:web": "npm run build --workspace @cosmocrew/web",
+    "build:metrics": "npm run build --workspace @cosmocrew/metrics",
+    "deploy:api": "npm run deploy --workspace @cosmocrew/metrics-api",
+    "check": "npm run check --workspaces --if-present"
   }
 }

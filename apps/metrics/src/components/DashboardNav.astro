@@ -1,0 +1,31 @@
+---
+/** Dashboard tabs: overview + one per app. Base is '/', so paths are absolute. */
+const tabs = [
+  { label: 'Overview', href: '/' },
+  { label: 'SliceFocus', href: '/apps/slicefocus' },
+  { label: 'LexiPower', href: '/apps/lexipower' },
+];
+
+const current = (Astro.url.pathname.replace(/\/+$/, '') || '/').toLowerCase();
+
+function isActive(href: string): boolean {
+  const target = (href.replace(/\/+$/, '') || '/').toLowerCase();
+  return current === target;
+}
+---
+
+<nav class="dash-nav" aria-label="Dashboard sections">
+  <div class="container">
+    <ul>
+      {
+        tabs.map((tab) => (
+          <li>
+            <a href={tab.href} aria-current={isActive(tab.href) ? 'page' : undefined}>
+              {tab.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>

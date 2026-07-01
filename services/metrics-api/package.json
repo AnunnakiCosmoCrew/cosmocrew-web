@@ -1,0 +1,25 @@
+{
+  "name": "@cosmocrew/metrics-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private metrics aggregation Worker for metrics.cosmocrew.dev. Verifies the Cloudflare Access JWT and serves the aggregate the dashboard reads; a scheduled job (Phase 3) pulls from App Store Connect / Firebase. Deployed to Cloudflare — never to GitHub Pages.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "tsc --noEmit",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@cosmocrew/metrics-contract": "*",
+    "jose": "^5"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4",
+    "typescript": "^6.0.3",
+    "wrangler": "^3"
+  }
+}

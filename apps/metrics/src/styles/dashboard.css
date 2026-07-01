@@ -1,0 +1,286 @@
+/* Dashboard styles. Reuses the shared CosmoCrew design tokens so the metrics
+   app matches the public site, plus dashboard-specific layout primitives. */
+@import '@cosmocrew/design/tokens.css';
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans);
+  font-size: var(--fs-400);
+  line-height: var(--lh-body);
+  color: var(--c-ink);
+  background-color: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  line-height: var(--lh-tight);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+h1 {
+  font-size: var(--fs-800);
+}
+
+a {
+  color: var(--c-accent);
+  text-decoration: none;
+  transition: color var(--dur) var(--ease);
+}
+a:hover {
+  color: var(--c-accent-hover);
+}
+:focus-visible {
+  outline: 2px solid var(--c-ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--sp-5);
+}
+
+.eyebrow {
+  font-size: var(--fs-300);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  font-weight: 600;
+}
+.lead {
+  font-size: var(--fs-500);
+  color: var(--c-ink-soft);
+  max-width: var(--maxw-prose);
+}
+
+/* ---------- Top bar ---------- */
+.dash-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: color-mix(in srgb, var(--c-bg) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--c-border);
+}
+.dash-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-5);
+  padding-block: var(--sp-4);
+}
+.dash-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--c-ink);
+  font-weight: 650;
+}
+.dash-brand:hover {
+  color: var(--c-ink);
+}
+.dash-brand-mark {
+  color: var(--c-accent);
+  flex: none;
+}
+.dash-brand-name {
+  font-size: var(--fs-500);
+}
+.dash-brand-name .sep {
+  color: var(--c-border);
+  margin-inline: var(--sp-2);
+}
+.dash-brand-name .kicker {
+  color: var(--c-ink-soft);
+  font-weight: 550;
+}
+.dash-badge {
+  font-size: var(--fs-300);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--c-ink-soft);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  padding: 0.2rem var(--sp-3);
+}
+
+/* ---------- Tabs ---------- */
+.dash-nav {
+  border-bottom: 1px solid var(--c-border);
+  background: var(--c-bg);
+}
+.dash-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-5);
+  list-style: none;
+  padding: 0;
+}
+.dash-nav a {
+  display: inline-block;
+  color: var(--c-ink-soft);
+  font-weight: 550;
+  padding-block: var(--sp-3);
+}
+.dash-nav a:hover {
+  color: var(--c-ink);
+}
+.dash-nav a[aria-current='page'] {
+  color: var(--c-ink);
+  box-shadow: inset 0 -2px 0 0 var(--c-accent);
+}
+
+/* ---------- Main ---------- */
+main {
+  flex: 1 0 auto;
+  padding-block: var(--sp-6) var(--sp-8);
+}
+.page-head {
+  margin-bottom: var(--sp-6);
+}
+.page-head h1 {
+  margin-top: var(--sp-1);
+}
+section + section {
+  margin-top: var(--sp-7);
+}
+.section-title {
+  font-size: var(--fs-600);
+  margin-bottom: var(--sp-4);
+}
+
+/* ---------- KPI cards ---------- */
+.kpi-grid {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+}
+.stat-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.stat-label {
+  font-size: var(--fs-300);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  font-weight: 600;
+}
+.stat-value {
+  font-size: var(--fs-800);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.stat-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.stat-delta {
+  font-size: var(--fs-300);
+  font-weight: 650;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+.stat-delta.up {
+  color: var(--c-ok);
+}
+.stat-delta.down {
+  color: #c2564b;
+}
+.stat-delta.flat {
+  color: var(--c-muted);
+}
+.stat-hint {
+  font-size: var(--fs-300);
+  color: var(--c-muted);
+}
+
+/* ---------- Chart cards ---------- */
+.chart-grid {
+  display: grid;
+  gap: var(--sp-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+.chart-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: var(--sp-5);
+  margin: 0;
+}
+.chart-head {
+  margin-bottom: var(--sp-4);
+}
+.chart-head h3 {
+  font-size: var(--fs-500);
+}
+.chart-sub {
+  font-size: var(--fs-300);
+  color: var(--c-muted);
+  margin-top: 0.1rem;
+}
+.chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* ---------- Footer ---------- */
+.dash-footer {
+  border-top: 1px solid var(--c-border);
+  color: var(--c-muted);
+  font-size: var(--fs-300);
+  padding-block: var(--sp-5);
+}
+.dash-footer .container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-4);
+  justify-content: space-between;
+}
+
+@media (prefers-color-scheme: dark) {
+  .stat-delta.down {
+    color: #e08a80;
+  }
+}

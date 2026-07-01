@@ -1,0 +1,30 @@
+# Cloudflare Worker: private metrics API for metrics.cosmocrew.dev.
+# Deployed to Cloudflare — NEVER to GitHub Pages (adr/0002, adr/0003, adr/0005).
+# Secrets are set with `wrangler secret put <NAME>` and are never committed.
+
+name = "cosmocrew-metrics-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Non-secret vars. Replace the placeholders per environment.
+#   TEAM_DOMAIN  — your Cloudflare Zero Trust team domain (issuer of the JWT).
+#   POLICY_AUD   — the Access application's Audience (AUD) tag.
+#   ALLOWED_ORIGIN — the dashboard origin allowed to call this API (CORS).
+[vars]
+TEAM_DOMAIN = "https://cosmocrew.cloudflareaccess.com"
+POLICY_AUD = "REPLACE_WITH_ACCESS_APP_AUD_TAG"
+ALLOWED_ORIGIN = "https://metrics.cosmocrew.dev"
+
+# Aggregate store the dashboard reads. The scheduled job (Phase 3) writes 'latest'.
+# Create with: wrangler kv namespace create METRICS_KV  (then paste the id here)
+[[kv_namespaces]]
+binding = "METRICS_KV"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Phase 3: nightly pull from App Store Connect / Firebase into METRICS_KV.
+[triggers]
+crons = ["0 6 * * *"]
+
+# Secrets (NOT stored here — set via `wrangler secret put`):
+#   ASC_ISSUER_ID, ASC_KEY_ID, ASC_PRIVATE_KEY   # App Store Connect API (JWT)
+#   FIREBASE_SA_JSON                             # Firebase / GA service account

@@ -1,0 +1,27 @@
+{
+  "name": "@cosmocrew/metrics",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private CosmoCrew metrics dashboard. Deployed SEPARATELY (Cloudflare Pages at metrics.cosmocrew.dev) and gated by Cloudflare Access — never shipped to GitHub Pages. See adr/0003.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@cosmocrew/design": "*",
+    "@cosmocrew/metrics-contract": "*",
+    "astro": "^7.0.3",
+    "chart.js": "^4.5.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "typescript": "^6.0.3"
+  }
+}

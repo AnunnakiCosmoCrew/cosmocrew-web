@@ -24,10 +24,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-      - name: Build with Astro
-        # Installs deps, runs `astro build`, and uploads the Pages artifact.
-        # Defaults to Node 24 (matches .nvmrc / package.json engines).
-        uses: withastro/action@v6
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      # Install the whole workspace from the root lockfile, then build ONLY the
+      # public site (apps/web). The private metrics dashboard (apps/metrics) is
+      # never built or uploaded here — it deploys separately to Cloudflare and
+      # must never reach GitHub Pages. See adr/0002, adr/0003, adr/0005.
+      - name: Install workspace dependencies
+        run: npm ci
+      - name: Build public site
+        run: npm run build:web
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/web/dist
 
   deploy:
     needs: build
