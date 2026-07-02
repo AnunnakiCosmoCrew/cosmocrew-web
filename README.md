@@ -8,7 +8,7 @@ support, and docs.
 - **Framework:** [Astro](https://astro.build) (static output, TypeScript)
 - **Styling:** hand-written modern CSS with design tokens (no UI framework)
 - **Hosting:** GitHub Pages, deployed via GitHub Actions
-- **Live URL:** https://anunnakicosmocrew.github.io/cosmocrew-web/
+- **Live URL:** https://anunnakicosmocrew.github.io/
 
 This repo is a small **npm-workspaces monorepo**:
 
@@ -40,7 +40,7 @@ Run from the repo root (scripts fan out to the workspaces):
 | Command                 | Action                                                             |
 | ----------------------- | ----------------------------------------------------------------- |
 | `npm install`           | Install all workspace dependencies                                |
-| `npm run dev`           | Start the **public site** dev server at `http://localhost:4321/cosmocrew-web/` |
+| `npm run dev`           | Start the **public site** dev server at `http://localhost:4321/`  |
 | `npm run dev:metrics`   | Start the **metrics dashboard** dev server (served from `/`)      |
 | `npm run dev:api`       | Run the **metrics API** Worker locally (`wrangler dev`)           |
 | `npm run build:web`     | Build the public site to `apps/web/dist/` (this is what ships)    |
@@ -49,9 +49,8 @@ Run from the repo root (scripts fan out to the workspaces):
 | `npm run check`         | Type-check every workspace (`astro check` / `tsc`)               |
 | `npm run deploy:api`    | Deploy the metrics API Worker (`wrangler deploy`)                 |
 
-> **Note the base path.** The public site is served from `/cosmocrew-web/`, so its
-> dev and preview servers live at `http://localhost:4321/cosmocrew-web/`, not the
-> bare root. The dashboard is served from `/`.
+> Both apps are served from the root (`/`): the repo is the org Pages site
+> (`anunnakicosmocrew.github.io`), so there is no sub-path — see `adr/0006`.
 
 ## Project structure
 
@@ -96,15 +95,15 @@ Significant architecture decisions are recorded in [`adr/`](adr/).
 
 ### Linking rule (important)
 
-Because the site is served from a sub-path, **never hand-write internal links as
-`/path`** — they would point at the domain root and 404. Always build internal
-URLs with the helper:
+Even though the site is served from the root today, **never hand-write internal
+links as `/path`** — always build internal URLs with the helper, so the site
+keeps working if the base path ever changes again:
 
 ```astro
 ---
 import { withBase } from '../lib/url';
 ---
-<a href={withBase('products')}>Products</a>   <!-- → /cosmocrew-web/products/ -->
+<a href={withBase('products')}>Products</a>   <!-- → /products/ -->
 ```
 
 External links (App Store, GitHub, `mailto:`) are used as-is. This indirection
@@ -125,15 +124,14 @@ deployment → Source** and select **GitHub Actions**. After that, every push to
 The **metrics dashboard** (`apps/metrics`) deploys separately to Cloudflare Pages
 — see [Private metrics dashboard](#private-metrics-dashboard).
 
-## Switching base path / custom domain
+## Switching to the custom domain
 
 We own `cosmocrew.dev`. To serve the **public site** there instead of the GitHub
-project URL, make these three changes:
+org URL, make these three changes:
 
 1. In `apps/web/astro.config.mjs`, set:
    ```js
    site: 'https://cosmocrew.dev',
-   base: '/',
    ```
 2. Add a file `apps/web/public/CNAME` containing exactly:
    ```

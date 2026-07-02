@@ -3,18 +3,18 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 // --- Deployment target -------------------------------------------------------
-// Currently deployed to GitHub *project* Pages:
-//   https://anunnakicosmocrew.github.io/cosmocrew-web/
+// Deployed as the GitHub *org* Pages site (repo: anunnakicosmocrew.github.io),
+// served from the domain root:
+//   https://anunnakicosmocrew.github.io/
 //
-// To move to the custom domain cosmocrew.dev later, change just these two lines:
+// To move to the custom domain cosmocrew.dev later, change just one line:
 //   site: 'https://cosmocrew.dev',
-//   base: '/',
 // then add `public/CNAME` containing `cosmocrew.dev`. Every internal link is
 // built with `withBase()` (src/lib/url.ts), so nothing else needs to change.
 // -----------------------------------------------------------------------------
 export default defineConfig({
   site: 'https://anunnakicosmocrew.github.io',
-  base: '/cosmocrew-web',
+  base: '/',
   trailingSlash: 'ignore',
   output: 'static',
   integrations: [sitemap()],

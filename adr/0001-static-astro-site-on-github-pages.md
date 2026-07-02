@@ -1,6 +1,6 @@
 # 1. Public site is an Astro static site on GitHub Pages
 
-- Status: Accepted
+- Status: Accepted; base-path detail amended by [0006](0006-serve-site-at-org-root.md)
 - Date: 2026-06-30
 - Deciders: CosmoCrew
 
@@ -21,11 +21,12 @@ Build the site with **Astro** (static output, TypeScript) and deploy it to
   Tailwind or UI framework.
 - **Content:** product data lives in Astro content collections
   (`src/content/products/*.md`) — a single source of truth for the lineup.
-- **Routing under a base path:** the site is served from a sub-path
-  (`/cosmocrew-web/`). All internal links are built through a `withBase()` helper
-  (`src/lib/url.ts`) so they resolve correctly, and switching to the
-  `cosmocrew.dev` apex later is a ~3-line config change (`base: '/'`, `site`, plus
-  a `public/CNAME`) with no template edits.
+- **Routing under a base path:** originally the site was served from a sub-path
+  (`/cosmocrew-web/`); since ADR 0006 it is served from the org root (`base: '/'`).
+  All internal links are built through a `withBase()` helper (`src/lib/url.ts`)
+  so they resolve correctly under any base, and switching to the `cosmocrew.dev`
+  apex later is a config change (`site`, plus a `public/CNAME`) with no template
+  edits.
 
 ## Consequences
 
