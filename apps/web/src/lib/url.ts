@@ -1,19 +1,18 @@
 /**
- * URL helpers for correct linking under the GitHub Pages base path.
+ * URL helpers for correct linking under the configured base path.
  *
- * The site is served from a sub-path (`/cosmocrew-web/`), so a hand-written
- * absolute path such as a leading-slash "products" link would point at the
- * domain root and 404. Always build internal links with `withBase()`. External
- * links (App Store, GitHub, mailto:, other subdomains) are passed through
- * unchanged.
+ * The site is served from the domain root today (base "/"), but every internal
+ * link still goes through `withBase()` so the site keeps working if it is ever
+ * served from a sub-path again. External links (App Store, GitHub, mailto:,
+ * other subdomains) are passed through unchanged.
  *
- * `import.meta.env.BASE_URL` reflects the configured `base` (e.g.
- * "/cosmocrew-web", or "/" on a custom domain). Its trailing slash is not
- * guaranteed across versions, so we normalise it here. Moving to cosmocrew.dev
- * later (base "/") needs no changes to this file.
+ * `import.meta.env.BASE_URL` reflects the configured `base` (e.g. "/", or a
+ * sub-path like "/some-repo"). Its trailing slash is not guaranteed across
+ * versions, so we normalise it here. Moving to cosmocrew.dev later needs no
+ * changes to this file.
  */
 
-// Normalised base with no trailing slash: "/cosmocrew-web", or "" when base is "/".
+// Normalised base with no trailing slash: "" when base is "/", or "/sub-path".
 const BASE: string = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
 /** True when the last path segment looks like a file (has an extension). */
